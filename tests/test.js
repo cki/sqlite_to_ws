@@ -19,13 +19,14 @@ describe('Database library', function() {
 	db.run("CREATE TABLE cooltable (field1 text,field2 text)", async function() {
 	    const stmts = await dbLib.getStatementsForFields(db, 'cooltable');
 
+	    assert.ok(stmts['field1'] !== null);
+	    assert.ok(stmts['field2'] !== null);
 	    
-	    assert.equal(stmts[0].field, 'field1');
-	    assert.equal(stmts[0].stmt.sql, 
+	    assert.equal(stmts['field1'].sql, 
 			 'select * from cooltable where field1 like ?');
-	    assert.equal(stmts[1].field, 'field2');
-	    assert.equal(stmts[1].stmt.sql, 
+	    assert.equal(stmts['field2'].sql, 
 			 'select * from cooltable where field2 like ?');
+
 	    done();
 	});
     });
