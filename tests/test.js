@@ -25,20 +25,32 @@ describe('Webserver', function() {
 	cb(server);
     }
 
+    it('should throw if requested table has no columns', async function() {
+	const db = new sqlite3.Database(':memory:');
+	await main
+	    .run(db, '/', 'cooltable', 8000)
+	    .catch(function(err) {
+		assert.deepEqual(err, Error('cooltable has no columns'));
+	    });
+    });
+
     it('should drop requests for http path we don\'t serve', function(done) {
 	const db = new sqlite3.Database(':memory:');
-	main
-	    .run(db, '/goodpathpath', 'cooltable', 8000)
-	    .then(function(server) {
-    		request({'abla':1}, 'localhost', '/badpath', 8000, function(data) {
-    		    assert.ok(data.length > 0);
-    		    data = JSON.parse(data)
-    		    assert.ok(data.errorMessage !== null);
-		    assert.equal(data.errorMessage, 'wrong url');
-		    server.close();
-		    done();
+	db.run('CREATE TABLE cooltable (col1 text, col2 text)', function() {
+	    main
+		.run(db, '/goodpathpath', 'cooltable', 8000)
+		.then(function(server) {
+    		    request({'abla':1}, 'localhost', '/badpath', 8000, 
+			    function(data) {
+    				assert.ok(data.length > 0);
+    				data = JSON.parse(data)
+    				assert.ok(data.errorMessage !== null);
+				assert.equal(data.errorMessage, 'wrong url');
+				server.close();
+				done();
+			    });
 		});
-	    });
+	});
     });
 
     it('should drop requests for non existing columns in table', function(done) {

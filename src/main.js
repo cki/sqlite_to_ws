@@ -15,11 +15,16 @@ async function run(db, path, tablename, port) {
     return serveContent(db, path, tablename, port);
 }
 
+
 /**
    Function that runs our webserver on table with port
 */
 async function serveContent(db, path, tablename, port) {
     const avlColumns = await dbLib.getColumns(db, tablename);
+    if (avlColumns.length == 0) {
+	throw new Error(tablename+' has no columns');
+    }
+
     const requestListener = createRequestListener(avlColumns, path, tablename, db)
     const server = http.createServer(requestListener);
     server.listen(port);
