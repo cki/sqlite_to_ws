@@ -54,6 +54,57 @@ describe('Webserver', function() {
     	    });
     	});
     });
+
+    it('should answer requests for existing columns in table', function(done) {
+    	getMinimalServer(function(server) {
+    	    let reqObject = {'col1': 'hello', 'col2': 'bar'};
+    	    request(reqObject, 'localhost', '/', 8000, function(data) {
+    		assert.ok(data.length > 0);
+    		data = JSON.parse(data);
+    		assert.ok(data.errorMessage == null);
+
+    		assert.deepEqual(data,
+    				 [
+    				     {'col1': 'hello foo', 'col2': 'world bar'},
+    				     {'col1': 'foo hello', 'col2': 'bar world'}
+    				 ]);
+    		server.close();
+    		done();
+    	    });
+    	});
+    });
+
+    it('should drop requests for a mix '+
+       'of existing / non existing fields in table', function(done) {
+    	   getMinimalServer(function(server) {
+    	       let reqObject = {'col1': 'hello', 'fieldnonexisting': 'bar'};
+    	       request(reqObject, 'localhost', '/', 8000, function(data) {
+    		   assert.ok(data.length > 0);
+    		   data = JSON.parse(data)
+    		   assert.ok(data.errorMessage !== null);
+    		   assert.equal(data.errorMessage, 'wrong req');
+
+    		   server.close();
+    		   done();
+    	       });
+    	   });
+       });
+
+    it('should not answer requests containing basic SQL injections '+
+       'of existing / non existing fields in table', function(done) {
+    	   getMinimalServer(function(server) {
+    	       let reqObject = {'col1': '\' OR col2 = "yyy"'};
+    	       request(reqObject, 'localhost', '/', 8000, function(data) {
+    		   assert.ok(data.length > 0);
+    		   data = JSON.parse(data)
+    		   assert.equal(data.length, 0);
+
+    		   server.close();
+    		   done();
+    	       });
+    	   });
+       });
+
 })
 
 describe('Database library', function() {
