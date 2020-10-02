@@ -11,16 +11,17 @@ const { parse } = require('querystring');
    @param {int} port - Port we want to open to serve our requests
 */
 module.exports.run = run;
-async function run(db, tablename, port) {
-    return serveContent(db, tablename, port);
+async function run(db, path, tablename, port) {
+    return serveContent(db, path, tablename, port);
 }
 
 /**
    Function that runs our webserver on table with port
 */
-async function serveContent(db, tablename, port) {
+async function serveContent(db, path, tablename, port) {
     const avlColumns = await dbLib.getColumns(db, tablename);
-    const server = http.createServer(requestListener(avlColumns, tablename, db));
+    const requestListener = createRequestListener(avlColumns, path, tablename, db)
+    const server = http.createServer(requestListener);
     server.listen(port);
     return server;
 }
@@ -117,7 +118,7 @@ async function answer(reqObj, tablename, db, resp) {
    @param {string} tablename - Name of table we want to query against
    @param {database} db - Database we query against
 */
-function requestListener(avlColumns, tablename, db) {
+function createRequestListener(avlColumns, path, tablename, db) {
 
     // checks if the requested keys are existing column names
     function requestsAvlColumns(requestedColumns)  {
@@ -132,7 +133,7 @@ function requestListener(avlColumns, tablename, db) {
 
     return async function(req, resp) {
 	// filter bad requests
-	if (req.url !== '/') return fail('wrong url', resp);
+	if (req.url !== path) return fail('wrong url', resp);
 	if (req.method !== 'POST') return fail('wrong method', resp);
 	
 	let reqObj = await getBody(req);
