@@ -10,15 +10,7 @@ const { parse } = require('querystring');
    @param {string} tablename - Name of table we want to query against
    @param {int} port - Port we want to open to serve our requests
 */
-module.exports.run = run;
-async function run(db, path, tablename, port) {
-    return serveContent(db, path, tablename, port);
-}
-
-
-/**
-   Function that runs our webserver on table with port
-*/
+module.exports.run = serveContent;
 async function serveContent(db, path, tablename, port) {
     const avlColumns = await dbLib.getColumns(db, tablename);
     if (avlColumns.length == 0) {
