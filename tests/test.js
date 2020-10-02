@@ -56,29 +56,43 @@ describe('Database library', function() {
     const dbLib = require('../src/db');
     const sqlite3 = require('sqlite3').verbose()
 
-    it('should correctly identify the fields of a table', function(done) {
+    it('should identify the columns of a table', function(done) {
 	const db = new sqlite3.Database(':memory:');
-	db.run("CREATE TABLE cooltable (field1 text,field2 text)", async function() {
-	    const fields = await dbLib.getFields(db, 'cooltable');
-	    assert.equal(fields[0], 'field1');
-	    assert.equal(fields[1], 'field2');
+	db.run("CREATE TABLE cooltable (col1 text,col2 text)", async function() {
+	    const fields = await dbLib.getColumns(db, 'cooltable');
+	    assert.equal(fields[0], 'col1');
+	    assert.equal(fields[1], 'col2');
 	    done();
 	});
     });
 
-    it('should create correct prepared statements for a table', function(done) {
+    it('should create prepared statement for a column', function(done) {
 	const db = new sqlite3.Database(':memory:');
-	db.run("CREATE TABLE cooltable (field1 text,field2 text)", async function() {
-	    const stmts = await dbLib.getStatementsForFields(db, 'cooltable');
+	db.run("CREATE TABLE cooltable (col1 text,col2 text)", async function() {
+	    const col1stmt = await dbLib.getStmtForColumn(db, 'cooltable', 'col1');
+	    const col2stmt = await dbLib.getStmtForColumn(db, 'cooltable', 'col2');
 
-	    assert.ok(stmts['field1'] !== null);
-	    assert.ok(stmts['field2'] !== null);
+	    assert.equal(col1stmt.sql, 
+                         'select * from cooltable where col1 like ?');
+	    assert.equal(col2stmt.sql, 
+                         'select * from cooltable where col2 like ?');
+	    done();
+	});
+    });
+
+    it('should create prepared statement for multiple columns', function(done) {
+	const db = new sqlite3.Database(':memory:');
+
+	db.run("CREATE TABLE cooltable (col1 text,col2 text)", async function() {
+	    const colsstmt = await dbLib.getStmtForColumns(db, 
+							   'cooltable', 
+							   ['col1','col2']);
+
+	    assert.equal(colsstmt.sql, 
+                         'select * from cooltable '+ 
+			 'where col1 like $col1 and col2 like $col2');
 	    
-	    assert.equal(stmts['field1'].sql, 
-			 'select * from cooltable where field1 like ?');
-	    assert.equal(stmts['field2'].sql, 
-			 'select * from cooltable where field2 like ?');
-
+	    
 	    done();
 	});
     });
