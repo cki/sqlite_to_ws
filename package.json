@@ -1,0 +1,31 @@
+{
+  "name": "sqlite_to_ws",
+  "version": "0.0.1",
+  "description": "Turns a table of an sqlite database into a queryable webservice",
+  "main": "run.js",
+  "scripts": {
+      "test": "mocha",
+      "start": "node src/run.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cki/sqlite_to_ws.git"
+  },
+  "keywords": [
+    "sqlite",
+    "sqlite3",
+    "werbservice",
+    "ws"
+  ],
+  "author": "Tim Kirch",
+  "license": "UNLICENSED",
+  "private": true,
+  "bugs": {
+    "url": "https://github.com/cki/sqlite_to_ws/issues"
+  },
+  "homepage": "https://github.com/cki/sqlite_to_ws#readme",
+  "dependencies": {
+    "mocha": "^8.1.3",
+    "sqlite3": "^5.0.0"
+  }
+}
