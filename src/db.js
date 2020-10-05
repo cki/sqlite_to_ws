@@ -45,6 +45,7 @@ async function getStmtForColumns(db, tablename, columns) {
 	}
     });
 
+    whereClause += ' limit 3000';
     const stmt = await new Promise((resolve) => {
 	let stmt = db.prepare(pre + whereClause, null, function() {
 	    resolve(stmt);
@@ -64,5 +65,5 @@ async function getStmtForColumns(db, tablename, columns) {
 */
 module.exports.getStmtForColumn = getStmtForColumn;
 async function getStmtForColumn(db, tablename, column) {
-    return db.prepare('select * from '+tablename+' where '+column+' like ?');
+    return db.prepare('select * from '+tablename+' where '+column+' like ? limit 3000');
 }
