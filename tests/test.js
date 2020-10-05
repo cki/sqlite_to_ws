@@ -144,9 +144,9 @@ describe('Database library', function() {
 	    const col2stmt = await dbLib.getStmtForColumn(db, 'cooltable', 'col2');
 
 	    assert.equal(col1stmt.sql, 
-                         'select * from cooltable where col1 like ?');
+                         'select * from cooltable where col1 like ? limit 3000');
 	    assert.equal(col2stmt.sql, 
-                         'select * from cooltable where col2 like ?');
+                         'select * from cooltable where col2 like ? limit 3000');
 	    done();
 	});
     });
@@ -164,7 +164,7 @@ describe('Database library', function() {
 
 	assert.equal(colsstmt.sql, 
                      'select * from cooltable '+ 
-	    	     'where col1 like $col1 and col2 like $col2');
+	    	     'where col1 like $col1 and col2 like $col2 limit 3000');
     });
 });
 
