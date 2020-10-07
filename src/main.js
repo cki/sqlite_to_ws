@@ -63,7 +63,8 @@ async function getBody(req) {
 function getRequestParams(requestedColumns, reqObj) {
     let params = {};
     requestedColumns.forEach(function(column) {
-	return params['$'+column] = '%'+reqObj[column]+'%';
+	let str = reqObj[column].split(" ").join("%");
+	return params['$'+column] = '%'+str+'%';
     });
     return params;
 }
@@ -79,7 +80,6 @@ async function answer(reqObj, tablename, db, resp) {
     const requestedColumns = Object.keys(reqObj);
     const stmt = await dbLib.getStmtForColumns(db, tablename, requestedColumns);
     const params = getRequestParams(requestedColumns, reqObj);
-    //console.log('STMT', stmt.sql, params);
 
     let tailRows = false;
     let errMessage = false;
