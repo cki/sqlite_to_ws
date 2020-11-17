@@ -12,7 +12,7 @@ async function getColumns(db, tablename) {
 		if (err) {
 		    return reject();
 		}
-		resolve(rows.map(function(row) {
+		return resolve(rows.map(function(row) {
 		    return row.name;
 		}));
 	    });

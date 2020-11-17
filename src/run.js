@@ -7,6 +7,6 @@ const main = require('./main');
     }
 });
 
-const sqlite3 = require('sqlite3').verbose()
+const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database(process.env.SQLPATH);
 main.run(db, process.env.HTTP_PATH, process.env.TABLENAME, process.env.PORT);

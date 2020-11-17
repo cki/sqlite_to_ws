@@ -12,6 +12,7 @@ const { parse } = require('querystring');
 */
 module.exports.run = run;
 async function run(db, path, tablename, port) {
+    console.log('starting server');
     return serveContent(db, path, tablename, port);
 }
 
@@ -20,7 +21,7 @@ async function run(db, path, tablename, port) {
 */
 async function serveContent(db, path, tablename, port) {
     const avlColumns = await dbLib.getColumns(db, tablename);
-    const requestListener = createRequestListener(avlColumns, path, tablename, db)
+    const requestListener = createRequestListener(avlColumns, path, tablename, db);
     const server = http.createServer(requestListener);
     server.listen(port);
     return server;
@@ -58,7 +59,9 @@ async function getBody(req) {
 }
 
 /**
-   Returns the params object we will supply to the preparedstatement
+   Returns the params object we will supply to the preparedstatement.
+
+   Basically wraps all arguments in '%' to wildcard searches.
 */
 function getRequestParams(requestedColumns, reqObj) {
     let params = {};
@@ -105,7 +108,7 @@ async function answer(reqObj, tablename, db, resp) {
 	      function completeAnswer(err, count) {
 		  if (err || errMessage) return fail('wrong url', resp);
 		  if (count == 0) resp.write("[");
-		  resp.end("]");
+		  return resp.end("]");
 	      });
 }
 
@@ -123,7 +126,6 @@ function createRequestListener(avlColumns, path, tablename, db) {
     // checks if the requested keys are existing column names
     function requestsAvlColumns(requestedColumns)  {
 	return requestedColumns.filter(function(requestedColumn) {
-
 	    for (let avlColumn of avlColumns) {
 		if (avlColumn === requestedColumn) return true;
 	    }
@@ -141,6 +143,6 @@ function createRequestListener(avlColumns, path, tablename, db) {
 	    return fail('wrong req', resp);
 
 	// answer request
-	answer(reqObj, tablename, db, resp);
-    }
+	return answer(reqObj, tablename, db, resp);
+    };
 }
