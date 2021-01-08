@@ -1,5 +1,10 @@
 const main = require('./main');
 
+/**
+   Basic script to run the process
+*/
+
+
 // check if required ENV variables are present
 ['HTTP_PATH', 'PORT','SQLPATH', 'TABLENAME'].forEach(function(varname) {
     if (process.env[varname] == null || process.env[varname].length === 0) {

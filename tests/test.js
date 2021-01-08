@@ -125,7 +125,7 @@ describe('Webserver', function() {
 
 describe('Database library', function() {
     const dbLib = require('../src/db');
-    const sqlite3 = require('sqlite3').verbose()
+    const sqlite3 = require('sqlite3').verbose();
 
     it('should identify the columns of a table', function(done) {
 	const db = new sqlite3.Database(':memory:');
@@ -144,9 +144,9 @@ describe('Database library', function() {
 	    const col2stmt = await dbLib.getStmtForColumn(db, 'cooltable', 'col2');
 
 	    assert.equal(col1stmt.sql, 
-                         'select * from cooltable where col1 like ? limit 3000');
+                         'select * from cooltable where col1 like ? limit 100');
 	    assert.equal(col2stmt.sql, 
-                         'select * from cooltable where col2 like ? limit 3000');
+                         'select * from cooltable where col2 like ? limit 100');
 	    done();
 	});
     });
@@ -164,7 +164,7 @@ describe('Database library', function() {
 
 	assert.equal(colsstmt.sql, 
                      'select * from cooltable '+ 
-	    	     'where col1 like $col1 and col2 like $col2 limit 3000');
+	    	     'where col1 like $col1 and col2 like $col2 limit 100');
     });
 });
 
