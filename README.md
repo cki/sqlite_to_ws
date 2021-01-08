@@ -82,6 +82,36 @@ Returns
 [{"title":"The Picture of Dorian Gray","author":"Oscar Wilde"}]
 ```
 
+
+##  Misc
+
+### Load test using apache2-utils`s "bench"
+
+Check if it handles concurrent requests.
+
+```
+echo "author=Wilde&title=Gr" > /tmp/post-data.txt
+ab                \
+-n 1000           \
+-c 20             \
+-s 30             \
+-p /tmp/post-data.txt  \
+-T 'application/x-www-form-urlencoded; charset=UTF-8'   \
+-v 3              \
+http://localhost:8080/
+```
+
+### Memory profiling (inspect running program)
+
+Change package.json:
+
+* OLD 
+  "start": "node src/run.js"
+* NEW 
+  "start": "node --inspect src/run.js"
+
+Do not forget to revert your changes for production!
+
 ## Lawyerly stuff
 
 This comes without any warranty. Use at your own peril.
